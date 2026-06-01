@@ -93,3 +93,54 @@ func showServis(daftar DaftarServis, n int) {
 		fmt.Printf("%d. ID servis: %d | Tanggal: %s | Jenis tindakan: %s | Biaya: %d\n", i+1, daftar[i].IDServis, daftar[i].Tanggal, daftar[i].JenisTindakan, daftar[i].Biaya)
 	}
 }
+
+// sequential search, cek ID pemilik yang terdaftar
+func cariPemilik(daftar DaftarPemilik, n int, id string) int {
+	for i := 0; i < n; i++ {
+		if daftar[i].IDPemilik == id {
+			return i
+		}
+	}
+	return -1
+}
+
+func tambahPemilik(daftar *DaftarPemilik, n *int) {
+	if *n >= NMAX {
+		fmt.Println("Data pemilik sudah penuh!")
+		return
+	}
+	var id string
+	fmt.Print("ID pemilik: ")
+	fmt.Scan(&id)
+
+	if cariPemilik(*daftar, *n, id) != -1 {
+		fmt.Println("ID pemilik sudah terdaftar")
+		return
+	}
+
+	daftar[*n].IDPemilik = id
+
+	fmt.Print("Nama pemilik: ")
+	fmt.Scan(&daftar[*n].Nama)
+
+	fmt.Print("Alamat: ")
+	fmt.Scan(&daftar[*n].Alamat)
+
+	fmt.Print("Nomor telepon: ")
+	fmt.Scan(&daftar[*n].NoTelp)
+
+	*n++
+	fmt.Println("Data pemilik berhasil ditambahkan.")
+}
+
+func showPemilik(daftar DaftarPemilik, n int) {
+	if n == 0 {
+		fmt.Println("Belum ada data pemilik yang terdaftar.")
+		return
+	}
+
+	fmt.Println("-- DAFTAR PEMILIK --")
+	for i := 0; i < n; i++ {
+		fmt.Printf("%d. ID: %s | Nama: %s | Alamat: %s | Telepon: %s\n", i+1, daftar[i].IDPemilik, daftar[i].Nama, daftar[i].Alamat, daftar[i].NoTelp)
+	}
+}

@@ -2,36 +2,58 @@ package main
 
 import "fmt"
 
-func tambahKendaraan(daftar *DaftarKendaraan, n *int) {
-	if *n >= NMAX {
+func tambahKendaraan(daftarK *DaftarKendaraan, nK *int, daftarP DaftarPemilik, nP int) {
+	if *nK >= NMAX {
 		fmt.Println("Memori aplikasi sudah penuh!")
 		return
 	}
 
-	fmt.Println("-- INPUT DATA KENDARAAN BARU --")
+	fmt.Println("INPUT DATA KENDARAAN BARU")
+
+	var inputID string
+	fmt.Print("Masukkan ID pemilik kendaraan: ")
+	fmt.Scan(&inputID)
+
+	indeksPemilik := cariPemilik(daftarP, nP, inputID)
+	if indeksPemilik == -1 {
+		fmt.Println("ID pemilik belum terdaftar!")
+		return
+	}
+
+	daftarK[*nK].IDPemilik = inputID
 
 	fmt.Print("Masukkan Plat Nomor: ")
-	fmt.Scan(&daftar[*n].PlatNomor)
+	fmt.Scan(&daftarK[*nK].PlatNomor)
 
-	fmt.Print("Masukkan Nama Pemilik: ")
-	fmt.Scan(&daftar[*n].NamaPemilik)
+	fmt.Print("Masukkan Jenis Kendaraan (Mobil/Motor): ")
+	fmt.Scan(&daftarK[*nK].JenisKendaraan)
 
-	fmt.Print("Masukkan Jenis Kendaraan (Mobil/Truk/Motor): ")
-	fmt.Scan(&daftar[*n].JenisKendaraan)
+	fmt.Print("Masukkan Tahun Produksi: ")
+	fmt.Scan(&daftarK[*nK].TahunProduksi)
 
-	*n++
-	fmt.Println("[INFO] Data kendaraan berhasil ditambahkan!")
+	*nK++
+	fmt.Println("Data kendaraan berhasil ditambahkan!")
 }
 
-func showKendaraan(daftar DaftarKendaraan, n int) {
-	if n == 0 {
+func showKendaraan(daftarK DaftarKendaraan, nK int, daftarP DaftarPemilik, nP int) {
+	if nK == 0 {
 		fmt.Println("Belum ada data kendaraan yang terdaftar.")
 		return
 	}
 
 	fmt.Println("-- DAFTAR KENDARAAN --")
-	for i := 0; i < n; i++ {
-		fmt.Printf("%d. Plat: %s | Pemilik: %s | Jenis Kendaraan: %s\n", i+1, daftar[i].PlatNomor, daftar[i].NamaPemilik, daftar[i].JenisKendaraan)
+	for i := 0; i < nK; i++ {
+		indeksPemilik := cariPemilik(daftarP, nP, daftarK[i].IDPemilik)
+		fmt.Printf("Data ke-%d:\n", i+1)
+		fmt.Printf("Plat Nomor: %s\n", daftarK[i].PlatNomor)
+		fmt.Printf("Jenis Kendaraan: %s\n", daftarK[i].JenisKendaraan)
+		fmt.Printf("Tahun Produksi: %d\n", daftarK[i].TahunProduksi)
+
+		if indeksPemilik != -1 {
+			fmt.Printf("Nama pemilik: %s (ID: %s)\n", daftarP[indeksPemilik].Nama, daftarP[indeksPemilik].IDPemilik)
+		} else {
+			fmt.Println("Data tidak diketahui/ditemukan")
+		}
 	}
 }
 
@@ -66,14 +88,19 @@ func tambahServis(daftarS *DaftarServis, nS *int, daftarK DaftarKendaraan, nK in
 	daftarS[*nS].PlatNomor = inputPlat
 
 	daftarS[*nS].IDServis = *nS + 1
-	fmt.Printf("ID servis: %d", daftarS[*nS].IDServis)
+	fmt.Println("ID servis: ", daftarS[*nS].IDServis)
 
-	fmt.Print("Tanggal (DD-MM-YYYY): ")
-	fmt.Scan(&daftarS[*nS].Tanggal)
+	fmt.Println("Masukkan Tanggal Servis")
+
+	fmt.Print("Tanggal (DD): ")
+	fmt.Scan(&daftarS[*nS].Tanggal.Hari)
+	fmt.Print("Bulan (MM): ")
+	fmt.Scan(&daftarS[*nS].Tanggal.Bulan)
+	fmt.Print("Tahun (YYYY): ")
+	fmt.Scan(&daftarS[*nS].Tanggal.Tahun)
 
 	fmt.Print("Jenis tindakan: ")
 	fmt.Scan(&daftarS[*nS].JenisTindakan)
-
 	fmt.Print("Biaya: ")
 	fmt.Scan(&daftarS[*nS].Biaya)
 	*nS++
@@ -90,7 +117,12 @@ func showServis(daftar DaftarServis, n int) {
 	fmt.Println("RIWAYAT SERVIS")
 
 	for i := 0; i < n; i++ {
-		fmt.Printf("%d. ID servis: %d | Tanggal: %s | Jenis tindakan: %s | Biaya: %d\n", i+1, daftar[i].IDServis, daftar[i].Tanggal, daftar[i].JenisTindakan, daftar[i].Biaya)
+		fmt.Printf("Nota ke-%d: \n", i+1)
+		fmt.Printf("ID Servis: %d\n", daftar[i].IDServis)
+		fmt.Printf("Plat Nomor: %s\n", daftar[i].PlatNomor)
+		fmt.Printf("Tanggal: %02d-%02d-%d\n", daftar[i].Tanggal.Hari, daftar[i].Tanggal.Bulan, daftar[i].Tanggal.Tahun)
+		fmt.Printf("Tindakan: %s\n", daftar[i].JenisTindakan)
+		fmt.Printf("Biaya: Rp. %d\n", daftar[i].Biaya)
 	}
 }
 
@@ -109,16 +141,11 @@ func tambahPemilik(daftar *DaftarPemilik, n *int) {
 		fmt.Println("Data pemilik sudah penuh!")
 		return
 	}
-	var id string
-	fmt.Print("ID pemilik: ")
-	fmt.Scan(&id)
+	fmt.Println("INPUT DATA PEMILIK")
 
-	if cariPemilik(*daftar, *n, id) != -1 {
-		fmt.Println("ID pemilik sudah terdaftar")
-		return
-	}
-
-	daftar[*n].IDPemilik = id
+	autoID := fmt.Sprintf("%03d", *n+1)
+	daftar[*n].IDPemilik = autoID
+	fmt.Println("ID pemilik: ", autoID)
 
 	fmt.Print("Nama pemilik: ")
 	fmt.Scan(&daftar[*n].Nama)
@@ -141,6 +168,277 @@ func showPemilik(daftar DaftarPemilik, n int) {
 
 	fmt.Println("-- DAFTAR PEMILIK --")
 	for i := 0; i < n; i++ {
-		fmt.Printf("%d. ID: %s | Nama: %s | Alamat: %s | Telepon: %s\n", i+1, daftar[i].IDPemilik, daftar[i].Nama, daftar[i].Alamat, daftar[i].NoTelp)
+		fmt.Printf("Pemilik ke-%d: \n", i+1)
+		fmt.Printf("ID Pemilik: %s\n", daftar[i].IDPemilik)
+		fmt.Printf("Nama: %s\n", daftar[i].Nama)
+		fmt.Printf("Alamat: %s\n", daftar[i].Alamat)
+		fmt.Printf("Nomor Telepon: %s\n", daftar[i].NoTelp)
+	}
+}
+
+func editPemilik(daftar *DaftarPemilik, n int) {
+	if n == 0 {
+		fmt.Println("Belum ada data pemilik.")
+		return
+	}
+	fmt.Println("\nEDIT DATA PEMILIK")
+
+	var cariID string
+	fmt.Print("Masukkan ID pemilik: ")
+	fmt.Scan(&cariID)
+
+	indeks := cariPemilik(*daftar, n, cariID)
+
+	if indeks == -1 {
+		fmt.Println("ID pemilik tidak ditemukan.")
+		return
+	}
+
+	fmt.Println("\nData Lama Ditemukan")
+	fmt.Printf("Nama: %s\n", daftar[indeks].Nama)
+	fmt.Printf("Alamat: %s\n", daftar[indeks].Alamat)
+	fmt.Printf("Nomor Telp: %s\n", daftar[indeks].NoTelp)
+
+	var namaBaru, alamatBaru, noTelpBaru string
+	fmt.Println("Masukkan Data Baru")
+
+	fmt.Print("Nama: ")
+	fmt.Scan(&namaBaru)
+
+	fmt.Print("Alamat: ")
+	fmt.Scan(&alamatBaru)
+
+	fmt.Print("No. Telp: ")
+	fmt.Scan(&noTelpBaru)
+
+	var konfirmasi string
+	fmt.Print("\nApakah yakin ingin menyimpan perubahan? (y/n) ")
+	fmt.Scan(&konfirmasi)
+
+	if konfirmasi == "y" || konfirmasi == "Y" {
+		daftar[indeks].Nama = namaBaru
+		daftar[indeks].Alamat = alamatBaru
+		daftar[indeks].NoTelp = noTelpBaru
+		fmt.Println("Data pemilik berhasil diperbarui.")
+	} else {
+		fmt.Println("Perubahan dibatalkan.")
+	}
+}
+
+func editKendaraan(daftarK *DaftarKendaraan, nK int, daftarP DaftarPemilik, nP int) {
+	if nK == 0 {
+		fmt.Println("Belum ada data kendaraan yang bisa diubah.")
+		return
+	}
+
+	fmt.Println("\nEDIT DATA KENDAAAN")
+	var cariPlat string
+	fmt.Print("Masukkan plat nomor kendaraan: ")
+	fmt.Scan(&cariPlat)
+
+	indeksK := -1
+
+	for i := 0; i < nK; i++ {
+		if daftarK[i].PlatNomor == cariPlat {
+			indeksK = i
+			break
+		}
+	}
+
+	if indeksK == -1 {
+		fmt.Println("Plat nomor tidak ditemukan")
+		return
+	}
+
+	fmt.Println("Data lama ditemukan:")
+	fmt.Printf("Plat Nomor: %s\n", daftarK[indeksK].PlatNomor)
+	fmt.Printf("Jenis Tindakan: %s\n", daftarK[indeksK].JenisKendaraan)
+	fmt.Printf("Tahun Produksi: %d\n", daftarK[indeksK].TahunProduksi)
+	fmt.Printf("ID Pemilik: %s\n", daftarK[indeksK].IDPemilik)
+
+	var jenisBaru, idBaru string
+	var tahunBaru int
+
+	fmt.Println("Masukkan Data Baru")
+
+	fmt.Print("Jenis Kendaraan (Mobil/Truk/Motor): ")
+	fmt.Scan(&jenisBaru)
+
+	fmt.Print("Tahun Produksi: ")
+	fmt.Scan(&tahunBaru)
+
+	for {
+		fmt.Print("Masukkan ID pemilik baru untuk kendaraan ini: ")
+		fmt.Scan(&idBaru)
+
+		if cariPemilik(daftarP, nP, idBaru) != -1 {
+			break
+		}
+		fmt.Println("ID Pemilik tidak terdaftar!")
+	}
+
+	var konfirmasi string
+	fmt.Print("\nApakah yakin ingin menyimpan perubahan? (y/n): ")
+	fmt.Scan(&konfirmasi)
+
+	if konfirmasi == "y" || konfirmasi == "Y" {
+		daftarK[indeksK].JenisKendaraan = jenisBaru
+		daftarK[indeksK].TahunProduksi = tahunBaru
+		daftarK[indeksK].IDPemilik = idBaru
+		fmt.Println("Data kendaraan berhasil diperbarui.")
+	} else {
+		fmt.Println("Perubahan dibatalkan.")
+	}
+}
+
+// sequential search cari kendaraan berdasar plat
+func cariKendaraan(daftarK DaftarKendaraan, nK int, findPlat string) int {
+	for i := 0; i < nK; i++ {
+		if daftarK[i].PlatNomor == findPlat {
+			return i
+		}
+	}
+	return -1
+}
+
+func detailCariKendaraan(daftarK DaftarKendaraan, nK int, daftarP DaftarPemilik, nP int) {
+	if nK == 0 {
+		fmt.Println("\nBelum ada data kendaraan di sistem.")
+		return
+	}
+
+	var plat string
+	fmt.Print("Masukkan Plat Nomor yang dicari: ")
+	fmt.Scan(&plat)
+
+	indeksK := cariKendaraan(daftarK, nK, plat)
+
+	if indeksK == -1 {
+		fmt.Println("Data kendaraan dengan plat tersebut tidak ditemukan.")
+	} else {
+		fmt.Printf("Plat nomor: %s\n", daftarK[indeksK].PlatNomor)
+		fmt.Printf("Jenis kendaraan: %s\n", daftarK[indeksK].JenisKendaraan)
+		fmt.Printf("Tahun produksi: %d\n", daftarK[indeksK].TahunProduksi)
+	}
+
+	indeksP := cariPemilik(daftarP, nP, daftarK[indeksK].IDPemilik)
+	if indeksP != -1 {
+		fmt.Printf("Nama pemilik: %s (ID: %s)\n", daftarP[indeksP].Nama, daftarP[indeksP].IDPemilik)
+		fmt.Printf("No. telp: %s\n", daftarP[indeksP].NoTelp)
+	}
+
+}
+
+// binary
+func cariServis(daftarS DaftarServis, nS int, findID int) int {
+	low := 0
+	high := nS - 1
+
+	for low <= high {
+		mid := (low + high) / 2
+
+		if daftarS[mid].IDServis == findID {
+			return mid
+		} else if daftarS[mid].IDServis < findID {
+			low = mid + 1
+		} else {
+			high = mid - 1
+		}
+	}
+	return -1
+}
+
+func detailCariServis(daftarS DaftarServis, nS int) {
+	if nS == 0 {
+		fmt.Println("\nBelum ada riwayat servis di sistem.")
+		return
+	}
+
+	var findID int
+	fmt.Print("Masukkan ID servis yang dicari: ")
+	fmt.Scan(&findID)
+
+	indeksS := cariServis(daftarS, nS, findID)
+
+	if indeksS == -1 {
+		fmt.Println("Nota servis dengan ID tersebut tidak ditemukan.")
+	} else {
+		fmt.Printf("ID Servis: %d\n", daftarS[indeksS].IDServis)
+		fmt.Printf("Plat Nomor: %s\n", daftarS[indeksS].PlatNomor)
+		fmt.Printf("Tanggal: %02d-%02d-%d\n", daftarS[indeksS].Tanggal.Hari, daftarS[indeksS].Tanggal.Bulan, daftarS[indeksS].Tanggal.Tahun)
+		fmt.Printf("Tindakan: %s\n", daftarS[indeksS].JenisTindakan)
+		fmt.Printf("Biaya: Rp %d\n", daftarS[indeksS].Biaya)
+	}
+}
+
+func showStatistik(daftarS DaftarServis, nS int) {
+	if nS == 0 {
+		fmt.Println("Belum ada data riwayat servis.")
+		return
+	}
+
+	var findMonth int
+	fmt.Println("Masukkan bulan yang ingin dilihat (1-12): ")
+	fmt.Scan(&findMonth)
+
+	if findMonth < 1 || findMonth > 12 {
+		fmt.Println("Input tidak valid!")
+	}
+
+	var listTindakan [NMAX]string
+	nTindakan := 0
+	totalPendapatan := 0
+
+	for i := 0; i < nS; i++ {
+		if daftarS[i].Tanggal.Bulan == findMonth {
+			listTindakan[nTindakan] = daftarS[i].JenisTindakan
+			nTindakan++
+			totalPendapatan += daftarS[i].Biaya
+		}
+	}
+
+	if nTindakan == 0 {
+		fmt.Printf("Tidak ada aktivitas servis pada bulan ke-%d.\n", findMonth)
+		return
+	}
+
+	jumlahMaksimum := 0
+	for i := 0; i < nTindakan; i++ {
+		hitung := 0
+		for j := 0; j < nTindakan; j++ {
+			if listTindakan[i] == listTindakan[j] {
+				hitung++
+			}
+		}
+		if hitung > jumlahMaksimum {
+			jumlahMaksimum = hitung
+		}
+	}
+
+	fmt.Printf("LAPORAN STATISTIK BULAN %d\n", findMonth)
+	fmt.Printf("Total Pendapatan: Rp %d\n", totalPendapatan)
+	fmt.Printf("Total Unit Diservis: %d kendaraan\n", nTindakan)
+	fmt.Printf("Frekuensi Kerusakan: Terbanyak muncul %d kali\n", jumlahMaksimum)
+	fmt.Println("Tindakan Paling Sering Keluar: ")
+
+	for i := 0; i < nTindakan; i++ {
+		hitung := 0
+		for j := 0; j < nTindakan; j++ {
+			if listTindakan[i] == listTindakan[j] {
+				hitung++
+			}
+		}
+		if hitung == jumlahMaksimum {
+			sudahDicetak := false
+			for k := 0; k < i; k++ {
+				if listTindakan[i] == listTindakan[k] {
+					sudahDicetak = true
+					break
+				}
+			}
+			if !sudahDicetak {
+				fmt.Printf("%s\n", listTindakan[i])
+			}
+		}
 	}
 }

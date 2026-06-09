@@ -13,8 +13,8 @@ func main() {
 	var pilihan int
 
 	for {
-		fmt.Println("1. Kelola Data Kendaraan")
-		fmt.Println("2. Kelola Data Pemilik")
+		fmt.Println("1. Kelola Data Pemilik")
+		fmt.Println("2. Kelola data kendaraan")
 		fmt.Println("3. Catat Riwayat Servis")
 		fmt.Println("4. Edit/Ubah Data")
 		fmt.Println("5. Cari Data Kendaraan/Servis")
@@ -26,33 +26,11 @@ func main() {
 		if pilihan == 1 {
 			for {
 				var subPilihan int
-				fmt.Println("\nMENU KELOLA KENDARAAN")
-				fmt.Println("1. Tambah kendaraan")
-				fmt.Println("2. Lihat semua kendaraan")
-				fmt.Println("3. Kembali ke menu utama")
-				fmt.Print("Pilih menu (1-3): ")
-				fmt.Scan(&subPilihan)
-
-				if subPilihan == 1 {
-					tambahKendaraan(&kendaraan, &nKendaraan)
-					break
-				} else if subPilihan == 2 {
-					showKendaraan(kendaraan, nKendaraan)
-					break
-				} else if subPilihan == 3 {
-					break
-				} else {
-					fmt.Println("Pilihan tidak valid!")
-				}
-			}
-		} else if pilihan == 2 {
-			for {
-				for {
-				var subPilihan int
 				fmt.Println("\nMENU KELOLA PEMILIK")
 				fmt.Println("1. Tambah pemilik")
 				fmt.Println("2. Lihat semua pemilik")
 				fmt.Println("3. Kembali ke menu utama")
+				fmt.Print("Pilih menu (1-3): ")
 				fmt.Scan(&subPilihan)
 
 				if subPilihan == 1 {
@@ -65,6 +43,25 @@ func main() {
 					fmt.Println("Pilihan tidak valid!")
 				}
 			}
+		} else if pilihan == 2 {
+			for {
+				var subPilihan int
+				fmt.Println("\nMENU KELOLA KENDARAAN")
+				fmt.Println("1. Tambah kendaraan")
+				fmt.Println("2. Lihat semua kendaraan")
+				fmt.Println("3. Kembali ke menu utama")
+				fmt.Print("Pilih menu (1-3): ")
+				fmt.Scan(&subPilihan)
+
+				if subPilihan == 1 {
+					tambahKendaraan(&kendaraan, &nKendaraan, pemilik, nPemilik)
+				} else if subPilihan == 2 {
+					showKendaraan(kendaraan, nKendaraan, pemilik, nPemilik)
+				} else if subPilihan == 3 {
+					break
+				} else {
+					fmt.Println("Pilihan tidak valid!")
+				}
 			}
 		} else if pilihan == 3 {
 			for {
@@ -77,10 +74,8 @@ func main() {
 
 				if subPilihan == 1 {
 					tambahServis(&servis, &nServis, kendaraan, nKendaraan)
-					break
 				} else if subPilihan == 2 {
 					showServis(servis, nServis)
-					break
 				} else if subPilihan == 3 {
 					break
 				} else {
@@ -88,15 +83,51 @@ func main() {
 				}
 			}
 		} else if pilihan == 4 {
-			fmt.Println("\n[INFO] Masuk ke Menu edit Data...")
+			for {
+				var subPilihan int
+				fmt.Println("\n>> MENU EDIT/UBAH DATA <<")
+				fmt.Println("1. Edit Data Pemilik")
+				fmt.Println("2. Edit Data Kendaraan")
+				fmt.Println("3. Kembali ke Menu Utama")
+				fmt.Print("Pilih menu (1-3): ")
+				fmt.Scan(&subPilihan)
+
+				if subPilihan == 1 {
+					editPemilik(&pemilik, nPemilik)
+				} else if subPilihan == 2 {
+					editKendaraan(&kendaraan, nKendaraan, pemilik, nPemilik)
+				} else if subPilihan == 3 {
+					break
+				} else {
+					fmt.Println("Pilihan tidak valid!")
+				}
+			}
 		} else if pilihan == 5 {
-			fmt.Println("\n[INFO] Masuk ke Menu cari Data...")
+			for {
+				var subPilihan int
+				fmt.Println("\nMENU CARI DATA")
+				fmt.Println("1. Cari Data Kendaraan (by Plat)")
+				fmt.Println("2. Cari Riwayat Servis (by ID Servis)")
+				fmt.Println("3. Kembali ke Menu Utama")
+				fmt.Print("Pilih menu (1-3): ")
+				fmt.Scan(&subPilihan)
+
+				if subPilihan == 1 {
+					detailCariKendaraan(kendaraan, nKendaraan, pemilik, nPemilik)
+				} else if subPilihan == 2 {
+					detailCariServis(servis, nServis)
+				} else if subPilihan == 3 {
+					break
+				} else {
+					fmt.Println("Pilihan tidak valid!")
+				}
+			}
 		} else if pilihan == 6 {
-			fmt.Println("\n[INFO] Masuk ke Menu Statistik...")
+			showStatistik(servis, nServis)
 		} else if pilihan == 7 {
-			fmt.Println("\nTerima kasih telah menggunakan AutoCare, sampai jumpa!")
+			fmt.Println("")
 			break
-		}else {
+		} else {
 			fmt.Println("Pilihan tidak valid!")
 		}
 		fmt.Println()

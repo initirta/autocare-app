@@ -19,9 +19,7 @@ func tambahKendaraan(daftarK *DaftarKendaraan, nK *int, daftarP DaftarPemilik, n
 		fmt.Println("ID pemilik belum terdaftar!")
 		return
 	}
-
 	daftarK[*nK].IDPemilik = inputID
-
 	fmt.Print("Masukkan Plat Nomor: ")
 	fmt.Scan(&daftarK[*nK].PlatNomor)
 
@@ -93,11 +91,11 @@ func tambahServis(daftarS *DaftarServis, nS *int, daftarK DaftarKendaraan, nK in
 	fmt.Println("Masukkan Tanggal Servis")
 
 	fmt.Print("Tanggal (DD): ")
-	fmt.Scan(&daftarS[*nS].Tanggal.Hari)
+	fmt.Scanf("%d\n", &daftarS[*nS].Tanggal.Hari)
 	fmt.Print("Bulan (MM): ")
-	fmt.Scan(&daftarS[*nS].Tanggal.Bulan)
+	fmt.Scanf("%d\n", &daftarS[*nS].Tanggal.Bulan)
 	fmt.Print("Tahun (YYYY): ")
-	fmt.Scan(&daftarS[*nS].Tanggal.Tahun)
+	fmt.Scanf("%d\n", &daftarS[*nS].Tanggal.Tahun)
 
 	fmt.Print("Jenis tindakan: ")
 	fmt.Scan(&daftarS[*nS].JenisTindakan)
@@ -383,6 +381,7 @@ func showStatistik(daftarS DaftarServis, nS int) {
 
 	if findMonth < 1 || findMonth > 12 {
 		fmt.Println("Input tidak valid!")
+		return
 	}
 
 	var listTindakan [NMAX]string
@@ -440,5 +439,75 @@ func showStatistik(daftarS DaftarServis, nS int) {
 				fmt.Printf("%s\n", listTindakan[i])
 			}
 		}
+	}
+}
+
+func hapusPemilik(daftar *DaftarPemilik, n *int, daftarK DaftarKendaraan, nK int) {
+	if *n == 0 {
+		fmt.Print("Belum ada data pemilik untuk dihapus.")
+		return
+	}
+
+	fmt.Println("\nHAPUS DATA PEMILIK")
+	var findID string
+	fmt.Print("Masukkan ID pemilik yang ingin dihapus: ")
+	fmt.Scan(&findID)
+
+	indeks := cariPemilik(*daftar, *n, findID)
+	if indeks == -1 {
+		fmt.Println("ID pemilik tidak ditemukan.")
+		return
+	}
+
+	for i := 0; i < nK; i++ {
+		if daftarK[i].IDPemilik == findID {
+			fmt.Print("Gagal hapus, kendaraan masih terdaftar di sistem!")
+			return
+		}
+	}
+	var konfirmasi string
+	fmt.Printf("Apakah Anda yakin ingin menghapus pemilik %s? (y/n): ", daftar[indeks].Nama)
+	fmt.Scan(&konfirmasi)
+
+	if konfirmasi == "y" || konfirmasi == "Y" {
+		for i := indeks; i < *n-1; i++ {
+			daftar[i] = daftar[i+1]
+		}
+		*n--
+		fmt.Print("Data pemilih berhasil dihapus.")
+	} else {
+		fmt.Print("Hapus data dibatalkan.")
+	}
+}
+
+func hapusKendaraan(daftarK *DaftarKendaraan, nK *int) {
+	if *nK == 0 {
+		fmt.Println("Belum ada data kendaraan untuk dihapus.")
+		return
+	}
+
+	fmt.Println("\nHAPUS DATA KENDARAAN")
+	var findPlat string
+	fmt.Print("Masukkan plat nomor kendaraan yang ingin dihapus: ")
+	fmt.Scan(&findPlat)
+
+	indeksK := cariKendaraan(*daftarK, *nK, findPlat)
+	if indeksK == -1 {
+		fmt.Println("Plat nomor tidak ditemukan.")
+		return
+	}
+
+	var konfirmasi string
+	fmt.Printf("Apakah Anda yakin ingin menghapus kendaraan plat %s? (y/n): ", findPlat)
+	fmt.Scan(&konfirmasi)
+
+	if konfirmasi == "Y" || konfirmasi == "y" {
+		for i := indeksK; i < *nK-1; i++ {
+			daftarK[i] = daftarK[i+1]
+		}
+		*nK--
+		fmt.Print("Data kendaraan berhasil dihapus")
+	} else {
+		fmt.Print("Hapus data dibatalkan.")
 	}
 }

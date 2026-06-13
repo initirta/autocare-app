@@ -88,7 +88,9 @@ func main() {
 				fmt.Println("\n>> MENU EDIT/UBAH DATA <<")
 				fmt.Println("1. Edit Data Pemilik")
 				fmt.Println("2. Edit Data Kendaraan")
-				fmt.Println("3. Kembali ke Menu Utama")
+				fmt.Println("3. Hapus Data Pemilik")
+				fmt.Println("4. Hapus Data Kendaraan")
+				fmt.Println("5. Kembali ke Menu Utama")
 				fmt.Print("Pilih menu (1-3): ")
 				fmt.Scan(&subPilihan)
 
@@ -97,9 +99,13 @@ func main() {
 				} else if subPilihan == 2 {
 					editKendaraan(&kendaraan, nKendaraan, pemilik, nPemilik)
 				} else if subPilihan == 3 {
+					hapusPemilik(&pemilik, &nPemilik, kendaraan, nKendaraan)
+				} else if subPilihan == 4 {
+					hapusKendaraan(&kendaraan, &nKendaraan)
+				} else if subPilihan == 5 {
 					break
 				} else {
-					fmt.Println("Pilihan tidak valid!")
+					fmt.Print("Pilihan tidak valid!")
 				}
 			}
 		} else if pilihan == 5 {

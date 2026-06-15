@@ -91,11 +91,17 @@ func tambahServis(daftarS *DaftarServis, nS *int, daftarK DaftarKendaraan, nK in
 	fmt.Print("Pilih kode kategori: ")
 	fmt.Scan(&kode)
 
-	if cariKategori(daftarKategori, nKategori, kode) == -1 {
-		fmt.Println("Kode kategori tidak ditemukan!")
+	indeksKategori := cariKategori(daftarKategori, nKategori, kode)
+	if indeksKategori == -1 {
+		fmt.Println("Kode kategori tidak  ditemukan!")
 		return
 	}
+
 	daftarS[*nS].kodeKategori = kode
+
+	daftarS[*nS].JenisTindakan = daftarKategori[indeksKategori].namaKerusakan
+
+	daftarS[*nS].Biaya = daftarKategori[indeksKategori].biaya
 
 	daftarS[*nS].IDServis = *nS + 1
 	fmt.Println("ID servis: ", daftarS[*nS].IDServis)
@@ -103,19 +109,14 @@ func tambahServis(daftarS *DaftarServis, nS *int, daftarK DaftarKendaraan, nK in
 	fmt.Println("Masukkan Tanggal Servis")
 
 	fmt.Print("Tanggal (DD): ")
-	fmt.Scan(&daftarS[*nS].Tanggal.Hari)
+	fmt.Scanf("%d\n", &daftarS[*nS].Tanggal.Hari)
 
 	fmt.Print("Bulan (MM): ")
-	fmt.Scan(&daftarS[*nS].Tanggal.Bulan)
+	fmt.Scanf("%d\n", &daftarS[*nS].Tanggal.Bulan)
 
 	fmt.Print("Tahun (YYYY): ")
-	fmt.Scan(&daftarS[*nS].Tanggal.Tahun)
+	fmt.Scanf("%d\n", &daftarS[*nS].Tanggal.Tahun)
 
-	fmt.Print("Jenis tindakan: ")
-	fmt.Scan(&daftarS[*nS].JenisTindakan)
-
-	fmt.Print("Biaya: ")
-	fmt.Scan(&daftarS[*nS].Biaya)
 	*nS++
 
 	fmt.Print("Data berhasil dicatat.")
@@ -420,7 +421,7 @@ func showStatistik(daftarS DaftarServis, nS int, daftarKategori DaftarKategori, 
 
 			adaPlat := false
 			for j := 0; j < nPlat; j++ {
-				if platTerhitung[j] == daftarS[i].PlatNomor{
+				if platTerhitung[j] == daftarS[i].PlatNomor {
 					adaPlat = true
 				}
 			}
@@ -564,6 +565,9 @@ func tambahKategori(daftar *DaftarKategori, n *int) {
 
 	fmt.Print("Nama kerusakan: ")
 	fmt.Scan(&daftar[*n].namaKerusakan)
+
+	fmt.Print("Biaya: ")
+	fmt.Scan(&daftar[*n].biaya)
 	*n++
 	fmt.Println("Data kategori kerusakan berhasil ditambahkan.")
 }
@@ -587,4 +591,54 @@ func cariKategori(daftar DaftarKategori, n int, kode string) int {
 		}
 	}
 	return -1
+}
+
+// ascending, tua ke baru
+func selectionTahunKendaraan(daftarK *DaftarKendaraan, nK int) {
+	if nK <= 1 {
+		return
+	}
+
+	for i := 0; i < nK-1; i++ {
+		min := i
+		for j := i + 1; j < nK; j++ {
+			if daftarK[j].TahunProduksi < daftarK[min].TahunProduksi {
+				min = j
+			}
+		}
+		daftarK[i], daftarK[min] = daftarK[min], daftarK[i]
+	}
+	fmt.Println("Berhasil mengurutkan berdasarkan tahun produksi.")
+}
+
+// insert berdasar servis terakhir
+// membandingkan
+func cekLastDate(tgl1, tgl2 Waktu) bool {
+	if tgl1.Tahun != tgl2.Tahun {
+		return tgl1.Tahun < tgl2.Tahun
+	}
+	if tgl1.Bulan != tgl2.Bulan {
+		return tgl1.Bulan < tgl2.Bulan
+	}
+	return tgl1.Hari < tgl2.Hari
+}
+
+//ascending, lama ke baru
+
+func insertionTglServis(daftarS *DaftarServis, nS int) {
+	if nS <= 1 {
+		return
+	}
+
+	for i := 1; i < nS; i++ {
+		key := daftarS[i]
+		j := i - 1
+
+		for j >= 0 && !cekLastDate(daftarS[j].Tanggal, key.Tanggal) {
+			daftarS[j+1] = daftarS[j]
+			j--
+		}
+		daftarS[j+1] = key
+	}
+	fmt.Println("Berhasil diurutkan berdasarkan tanggal.")
 }

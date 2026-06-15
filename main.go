@@ -52,8 +52,9 @@ func main() {
 				fmt.Println("\nMENU KELOLA KENDARAAN")
 				fmt.Println("1. Tambah kendaraan")
 				fmt.Println("2. Lihat semua kendaraan")
-				fmt.Println("3. Kembali ke menu utama")
-				fmt.Print("Pilih menu (1-3): ")
+				fmt.Println("3. Urutkan kendaraan berdasarkan tahun produksi")
+				fmt.Println("4. Kembali ke menu utama")
+				fmt.Print("Pilih menu (1-4): ")
 				fmt.Scan(&subPilihan)
 
 				if subPilihan == 1 {
@@ -61,6 +62,8 @@ func main() {
 				} else if subPilihan == 2 {
 					showKendaraan(kendaraan, nKendaraan, pemilik, nPemilik)
 				} else if subPilihan == 3 {
+					selectionTahunKendaraan(&kendaraan, nKendaraan)
+				} else if subPilihan == 4 {
 					break
 				} else {
 					fmt.Println("Pilihan tidak valid!")
@@ -92,7 +95,9 @@ func main() {
 				fmt.Println("\n MENU CATAT RIWAYAT SERVIS")
 				fmt.Println("1. Catat servis baru")
 				fmt.Println("2. Lihat riwayat servis")
-				fmt.Println("3. Kembali ke menu utama")
+				fmt.Println("3. Urutkan riwayat servis berdasarkan tanggal")
+				fmt.Println("4. Kembali ke menu utama")
+				fmt.Print("Pilih menu (1-4): ")
 				fmt.Scan(&subPilihan)
 
 				if subPilihan == 1 {
@@ -100,9 +105,11 @@ func main() {
 				} else if subPilihan == 2 {
 					showServis(servis, nServis, kategori, nKategori)
 				} else if subPilihan == 3 {
+					insertionTglServis(&servis, nServis)
+				} else if pilihan == 4 {
 					break
 				} else {
-					fmt.Print("Pilihan tidak valid!")
+					fmt.Println("Pilihan tidak valid!")
 				}
 			}
 		} else if pilihan == 5 {
@@ -114,7 +121,7 @@ func main() {
 				fmt.Println("3. Hapus Data Pemilik")
 				fmt.Println("4. Hapus Data Kendaraan")
 				fmt.Println("5. Kembali ke Menu Utama")
-				fmt.Print("Pilih menu (1-3): ")
+				fmt.Print("Pilih menu (1-5): ")
 				fmt.Scan(&subPilihan)
 
 				if subPilihan == 1 {
@@ -153,9 +160,9 @@ func main() {
 			}
 		} else if pilihan == 7 {
 			showStatistik(servis, nServis, kategori, nKategori)
-			break
 		} else if pilihan == 8 {
-			fmt.Println("")
+			fmt.Println("Terima kasih, program selesai.")
+			break
 		} else {
 			fmt.Println("Pilihan tidak valid!")
 		}

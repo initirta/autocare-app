@@ -26,10 +26,17 @@ type Servis struct {
 	IDServis      int
 	PlatNomor     string
 	Tanggal       Waktu
+	kodeKategori string
 	JenisTindakan string
 	Biaya         int
+}
+
+type namaKategori struct{
+	kodeKategori string
+	namaKerusakan string
 }
 
 type DaftarKendaraan [NMAX]Kendaraan
 type DaftarServis [NMAX]Servis
 type DaftarPemilik [NMAX]Pemilik
+type DaftarKategori [NMAX]namaKategori

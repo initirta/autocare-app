@@ -66,7 +66,7 @@ func cekPlat(daftar DaftarKendaraan, n int, plat string) bool {
 }
 
 // catat transaksi servis
-func tambahServis(daftarS *DaftarServis, nS *int, daftarK DaftarKendaraan, nK int) {
+func tambahServis(daftarS *DaftarServis, nS *int, daftarK DaftarKendaraan, nK int, daftarKategori DaftarKategori, nKategori int) {
 	if *nS >= NMAX {
 		fmt.Println("Memori penuh!")
 		return
@@ -85,20 +85,35 @@ func tambahServis(daftarS *DaftarServis, nS *int, daftarK DaftarKendaraan, nK in
 	}
 	daftarS[*nS].PlatNomor = inputPlat
 
+	fmt.Println("\nDAFTAR KATEGORI")
+	showKategori(daftarKategori, nKategori)
+	var kode string
+	fmt.Print("Pilih kode kategori: ")
+	fmt.Scan(&kode)
+
+	if cariKategori(daftarKategori, nKategori, kode) == -1 {
+		fmt.Println("Kode kategori tidak ditemukan!")
+		return
+	}
+	daftarS[*nS].kodeKategori = kode
+
 	daftarS[*nS].IDServis = *nS + 1
 	fmt.Println("ID servis: ", daftarS[*nS].IDServis)
 
 	fmt.Println("Masukkan Tanggal Servis")
 
 	fmt.Print("Tanggal (DD): ")
-	fmt.Scanf("%d\n", &daftarS[*nS].Tanggal.Hari)
+	fmt.Scan(&daftarS[*nS].Tanggal.Hari)
+
 	fmt.Print("Bulan (MM): ")
-	fmt.Scanf("%d\n", &daftarS[*nS].Tanggal.Bulan)
+	fmt.Scan(&daftarS[*nS].Tanggal.Bulan)
+
 	fmt.Print("Tahun (YYYY): ")
-	fmt.Scanf("%d\n", &daftarS[*nS].Tanggal.Tahun)
+	fmt.Scan(&daftarS[*nS].Tanggal.Tahun)
 
 	fmt.Print("Jenis tindakan: ")
 	fmt.Scan(&daftarS[*nS].JenisTindakan)
+
 	fmt.Print("Biaya: ")
 	fmt.Scan(&daftarS[*nS].Biaya)
 	*nS++
@@ -106,7 +121,7 @@ func tambahServis(daftarS *DaftarServis, nS *int, daftarK DaftarKendaraan, nK in
 	fmt.Print("Data berhasil dicatat.")
 }
 
-func showServis(daftar DaftarServis, n int) {
+func showServis(daftar DaftarServis, n int, daftarKategori DaftarKategori, nKategori int) {
 	if n == 0 {
 		fmt.Print("Belum ada riwayat servis yang tercatat.")
 		return
@@ -114,10 +129,14 @@ func showServis(daftar DaftarServis, n int) {
 
 	fmt.Println("RIWAYAT SERVIS")
 
+	indeks := cariKategori(daftarKategori, nKategori, daftar[0].JenisTindakan)
 	for i := 0; i < n; i++ {
 		fmt.Printf("Nota ke-%d: \n", i+1)
 		fmt.Printf("ID Servis: %d\n", daftar[i].IDServis)
 		fmt.Printf("Plat Nomor: %s\n", daftar[i].PlatNomor)
+		if indeks != -1 {
+			fmt.Printf("kode kategori: %s\n", daftarKategori[indeks].kodeKategori)
+		}
 		fmt.Printf("Tanggal: %02d-%02d-%d\n", daftar[i].Tanggal.Hari, daftar[i].Tanggal.Bulan, daftar[i].Tanggal.Tahun)
 		fmt.Printf("Tindakan: %s\n", daftar[i].JenisTindakan)
 		fmt.Printf("Biaya: Rp. %d\n", daftar[i].Biaya)
@@ -369,7 +388,7 @@ func detailCariServis(daftarS DaftarServis, nS int) {
 	}
 }
 
-func showStatistik(daftarS DaftarServis, nS int) {
+func showStatistik(daftarS DaftarServis, nS int, daftarKategori DaftarKategori, nKategori int) {
 	if nS == 0 {
 		fmt.Println("Belum ada data riwayat servis.")
 		return
@@ -384,28 +403,45 @@ func showStatistik(daftarS DaftarServis, nS int) {
 		return
 	}
 
-	var listTindakan [NMAX]string
-	nTindakan := 0
+	var listKategori [NMAX]string
+	var platTerhitung [NMAX]string
+
+	nData := 0
+	nPlat := 0
 	totalPendapatan := 0
+	jumlahKendaraan := 0
 
 	for i := 0; i < nS; i++ {
 		if daftarS[i].Tanggal.Bulan == findMonth {
-			listTindakan[nTindakan] = daftarS[i].JenisTindakan
-			nTindakan++
+			listKategori[nData] = daftarS[i].kodeKategori
+			nData++
+
 			totalPendapatan += daftarS[i].Biaya
+
+			adaPlat := false
+			for j := 0; j < nPlat; j++ {
+				if platTerhitung[j] == daftarS[i].PlatNomor{
+					adaPlat = true
+				}
+			}
+			if !adaPlat {
+				platTerhitung[nPlat] = daftarS[i].PlatNomor
+				nPlat++
+				jumlahKendaraan++
+			}
 		}
 	}
 
-	if nTindakan == 0 {
+	if nData == 0 {
 		fmt.Printf("Tidak ada aktivitas servis pada bulan ke-%d.\n", findMonth)
 		return
 	}
 
 	jumlahMaksimum := 0
-	for i := 0; i < nTindakan; i++ {
+	for i := 0; i < nData; i++ {
 		hitung := 0
-		for j := 0; j < nTindakan; j++ {
-			if listTindakan[i] == listTindakan[j] {
+		for j := 0; j < nData; j++ {
+			if listKategori[i] == listKategori[j] {
 				hitung++
 			}
 		}
@@ -416,27 +452,30 @@ func showStatistik(daftarS DaftarServis, nS int) {
 
 	fmt.Printf("LAPORAN STATISTIK BULAN %d\n", findMonth)
 	fmt.Printf("Total Pendapatan: Rp %d\n", totalPendapatan)
-	fmt.Printf("Total Unit Diservis: %d kendaraan\n", nTindakan)
+	fmt.Printf("Total Unit Diservis: %d kendaraan\n", jumlahKendaraan)
 	fmt.Printf("Frekuensi Kerusakan: Terbanyak muncul %d kali\n", jumlahMaksimum)
-	fmt.Println("Tindakan Paling Sering Keluar: ")
+	fmt.Println("Kategori Kerusakan Paling Sering Keluar: ")
 
-	for i := 0; i < nTindakan; i++ {
+	for i := 0; i < nData; i++ {
 		hitung := 0
-		for j := 0; j < nTindakan; j++ {
-			if listTindakan[i] == listTindakan[j] {
+		for j := 0; j < nData; j++ {
+			if listKategori[i] == listKategori[j] {
 				hitung++
 			}
 		}
 		if hitung == jumlahMaksimum {
 			sudahDicetak := false
 			for k := 0; k < i; k++ {
-				if listTindakan[i] == listTindakan[k] {
+				if listKategori[i] == listKategori[k] {
 					sudahDicetak = true
 					break
 				}
 			}
 			if !sudahDicetak {
-				fmt.Printf("%s\n", listTindakan[i])
+				idx := cariKategori(daftarKategori, nKategori, listKategori[i])
+				if idx != -1 {
+					fmt.Printf("%s\n (%d kali)\n", daftarKategori[idx].namaKerusakan, hitung)
+				}
 			}
 		}
 	}
@@ -510,4 +549,42 @@ func hapusKendaraan(daftarK *DaftarKendaraan, nK *int) {
 	} else {
 		fmt.Print("Hapus data dibatalkan.")
 	}
+}
+
+func tambahKategori(daftar *DaftarKategori, n *int) {
+	if *n >= NMAX {
+		fmt.Println("Data kategori sudah penuh!")
+		return
+	}
+	fmt.Println("INPUT DATA KATEGORI KERUSAKAN")
+
+	autoID := fmt.Sprintf("%03d", *n+1)
+	daftar[*n].kodeKategori = autoID
+	fmt.Println("Kode kategori: ", autoID)
+
+	fmt.Print("Nama kerusakan: ")
+	fmt.Scan(&daftar[*n].namaKerusakan)
+	*n++
+	fmt.Println("Data kategori kerusakan berhasil ditambahkan.")
+}
+
+func showKategori(daftar DaftarKategori, n int) {
+	if n == 0 {
+		fmt.Println("Belum ada data kategori kerusakan yang terdaftar.")
+		return
+	}
+	fmt.Println("-- DAFTAR KATEGORI KERUSAKAN --")
+	for i := 0; i < n; i++ {
+		fmt.Printf("Kode Kategori: %s, Nama Kerusakan: %s\n", daftar[i].kodeKategori, daftar[i].namaKerusakan)
+	}
+
+}
+
+func cariKategori(daftar DaftarKategori, n int, kode string) int {
+	for i := 0; i < n; i++ {
+		if daftar[i].kodeKategori == kode {
+			return i
+		}
+	}
+	return -1
 }

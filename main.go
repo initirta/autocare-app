@@ -6,21 +6,24 @@ func main() {
 	var kendaraan DaftarKendaraan
 	var servis DaftarServis
 	var pemilik DaftarPemilik
+	var kategori DaftarKategori
 	var nKendaraan int = 0
 	var nServis int = 0
 	var nPemilik int = 0
+	var nKategori int = 0
 
 	var pilihan int
 
 	for {
 		fmt.Println("1. Kelola Data Pemilik")
 		fmt.Println("2. Kelola data kendaraan")
-		fmt.Println("3. Catat Riwayat Servis")
-		fmt.Println("4. Edit/Ubah Data")
-		fmt.Println("5. Cari Data Kendaraan/Servis")
-		fmt.Println("6. Tampilkan Laporan & Statistik")
-		fmt.Println("7. Keluar")
-		fmt.Print("Pilih menu (1-7): ")
+		fmt.Println("3. Kelola Kategori Service")
+		fmt.Println("4. Catat Riwayat Servis")
+		fmt.Println("5. Edit/Ubah Data")
+		fmt.Println("6. Cari Data Kendaraan/Servis")
+		fmt.Println("7. Tampilkan Laporan & Statistik")
+		fmt.Println("8. Keluar")
+		fmt.Print("Pilih menu (1-8): ")
 		fmt.Scan(&pilihan)
 
 		if pilihan == 1 {
@@ -66,6 +69,26 @@ func main() {
 		} else if pilihan == 3 {
 			for {
 				var subPilihan int
+				fmt.Println("\nMENU CATAT KATEGORI SERVICE")
+				fmt.Println("1. Tambah kategori service")
+				fmt.Println("2. Lihat semua kategori service")
+				fmt.Println("3. Kembali ke menu utama")
+				fmt.Print("Pilih menu (1-3): ")
+				fmt.Scan(&subPilihan)
+
+				if subPilihan == 1 {
+					tambahKategori(&kategori, &nKategori)
+				} else if subPilihan == 2 {
+					showKategori(kategori, nKategori)
+				} else if subPilihan == 3 {
+					break
+				} else {
+					fmt.Println("Pilihan tidak valid!")
+				}
+			}
+		} else if pilihan == 4 {
+			for {
+				var subPilihan int
 				fmt.Println("\n MENU CATAT RIWAYAT SERVIS")
 				fmt.Println("1. Catat servis baru")
 				fmt.Println("2. Lihat riwayat servis")
@@ -73,16 +96,16 @@ func main() {
 				fmt.Scan(&subPilihan)
 
 				if subPilihan == 1 {
-					tambahServis(&servis, &nServis, kendaraan, nKendaraan)
+					tambahServis(&servis, &nServis, kendaraan, nKendaraan, kategori, nKategori)
 				} else if subPilihan == 2 {
-					showServis(servis, nServis)
+					showServis(servis, nServis, kategori, nKategori)
 				} else if subPilihan == 3 {
 					break
 				} else {
 					fmt.Print("Pilihan tidak valid!")
 				}
 			}
-		} else if pilihan == 4 {
+		} else if pilihan == 5 {
 			for {
 				var subPilihan int
 				fmt.Println("\n>> MENU EDIT/UBAH DATA <<")
@@ -108,7 +131,7 @@ func main() {
 					fmt.Print("Pilihan tidak valid!")
 				}
 			}
-		} else if pilihan == 5 {
+		} else if pilihan == 6 {
 			for {
 				var subPilihan int
 				fmt.Println("\nMENU CARI DATA")
@@ -128,11 +151,11 @@ func main() {
 					fmt.Println("Pilihan tidak valid!")
 				}
 			}
-		} else if pilihan == 6 {
-			showStatistik(servis, nServis)
 		} else if pilihan == 7 {
-			fmt.Println("")
+			showStatistik(servis, nServis, kategori, nKategori)
 			break
+		} else if pilihan == 8 {
+			fmt.Println("")
 		} else {
 			fmt.Println("Pilihan tidak valid!")
 		}

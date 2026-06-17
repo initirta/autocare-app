@@ -53,8 +53,9 @@ func main() {
 				fmt.Println("1. Tambah kendaraan")
 				fmt.Println("2. Lihat semua kendaraan")
 				fmt.Println("3. Urutkan kendaraan berdasarkan tahun produksi")
-				fmt.Println("4. Kembali ke menu utama")
-				fmt.Print("Pilih menu (1-4): ")
+				fmt.Println("4. Urutkan berdasarkan plat")
+				fmt.Println("5. Kembali ke menu utama")
+				fmt.Print("Pilih menu (1-5): ")
 				fmt.Scan(&subPilihan)
 
 				if subPilihan == 1 {
@@ -64,9 +65,11 @@ func main() {
 				} else if subPilihan == 3 {
 					selectionTahunKendaraan(&kendaraan, nKendaraan)
 				} else if subPilihan == 4 {
+					selectionPlat(&kendaraan, nKendaraan)
+				} else if pilihan == 5 {
 					break
 				} else {
-					fmt.Println("Pilihan tidak valid!")
+					fmt.Println("Pilihan tidak valid")
 				}
 			}
 		} else if pilihan == 3 {

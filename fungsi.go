@@ -144,7 +144,7 @@ func showServis(daftar DaftarServis, n int, daftarKategori DaftarKategori, nKate
 	}
 }
 
-// sequential search, cek ID pemilik yang terdaftar
+// seq search
 func cariPemilik(daftar DaftarPemilik, n int, id string) int {
 	for i := 0; i < n; i++ {
 		if daftar[i].IDPemilik == id {
@@ -641,4 +641,21 @@ func insertionTglServis(daftarS *DaftarServis, nS int) {
 		daftarS[j+1] = key
 	}
 	fmt.Println("Berhasil diurutkan berdasarkan tanggal.")
+}
+
+func selectionPlat(daftarK *DaftarKendaraan, nK int) {
+	if nK <= 1 {
+		return
+	}
+
+	for i := 0; i < nK-1; i++ {
+		min := i
+		for j := i + 1; j < nK; j++ {
+			if daftarK[j].PlatNomor < daftarK[min].PlatNomor {
+				min = j
+			}
+		}
+		daftarK[i], daftarK[min] = daftarK[min], daftarK[i]
+	}
+	fmt.Println("berhasil")
 }
